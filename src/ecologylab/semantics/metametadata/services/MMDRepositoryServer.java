@@ -16,9 +16,7 @@ public class MMDRepositoryServer
 	        
 	        System.out.println("Starting server");
 	        handler.addServlet(new ServletHolder(new MMDJsonRepoServlet()),"/");
-	        
 	        server.setHandler(handler);
-	        
 	        server.start();
 	        server.join();
 	    }	

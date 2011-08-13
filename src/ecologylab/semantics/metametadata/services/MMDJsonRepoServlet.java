@@ -1,8 +1,5 @@
 package ecologylab.semantics.metametadata.services;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -15,20 +12,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.w3c.tidy.Tidy;
 
 import ecologylab.net.ParsedURL;
-import ecologylab.semantics.collecting.MetaMetadataRepositoryInit;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.generated.library.RepositoryMetadataTranslationScope;
 import ecologylab.semantics.metametadata.MetaMetadata;
-import ecologylab.semantics.metametadata.MetaMetadataCollectionField;
-import ecologylab.semantics.metametadata.MetaMetadataCompositeField;
-import ecologylab.semantics.metametadata.MetaMetadataField;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
-import ecologylab.semantics.metametadata.MetaMetadataScalarField;
-import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
-import ecologylab.semantics.metametadata.NestedMetaMetadataFieldTranslationScope;
+import ecologylab.serialization.ElementState.FORMAT;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;
-import ecologylab.serialization.ElementState.FORMAT;
 
 
 @SuppressWarnings("serial")
@@ -57,8 +47,7 @@ public class MMDJsonRepoServlet extends HttpServlet
       response.setContentType("text/html");
       response.setStatus(HttpServletResponse.SC_OK);
       
-			//writer.println("<h1>Hello World !</h1>");
-      //writer.println("session=" + request.getSession(true).getId());
+
       String purlParam = request.getParameter("purl");
   		ParsedURL purl = ParsedURL.getAbsolute(purlParam);
   		PrintWriter printWriter;
