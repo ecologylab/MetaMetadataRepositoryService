@@ -3,6 +3,7 @@ package ecologylab.semantics.metametadata.services;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -16,6 +17,7 @@ import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.generated.library.RepositoryMetadataTranslationScope;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
+import ecologylab.semantics.metametadata.services.responses.MetaMetadataNameListResponse;
 import ecologylab.serialization.ElementState.FORMAT;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;
@@ -47,42 +49,104 @@ public class MMDJsonRepoServlet extends HttpServlet
       response.setContentType("text/html");
       response.setStatus(HttpServletResponse.SC_OK);
       
-
       String purlParam = request.getParameter("purl");
+      String mmdNameParam = request.getParameter("mmdName");
+      String getMMDListParam = request.getParameter("getMMDList");
   		ParsedURL purl = ParsedURL.getAbsolute(purlParam);
   		PrintWriter printWriter;
-  		if(purl == null)
+  		if(purl != null )
+  		{
+  			sendMMDJsonForPurl(response, purl);
+    		return;
+  		}
+  		else if(getMMDListParam != null)
+  		{
+    		sendMMNameList(response);
+				return;
+  		}
+  		else if(mmdNameParam != null && mmdNameParam.length() > 0 )
+  		{
+  			sendMMDByName(response, mmdNameParam);
+  		}
+  		else
   		{
   			printWriter = response.getWriter();
-				printWriter.append("Invalid Purl parameter");
+				printWriter.append("Invalid request parameter");
 				printWriter.close();
-  			 //append("Invalid Purl");
-  			return;
+  			//append("Invalid Purl");
   		}
   		
-      
-  		MetaMetadata requestedMM = repo.getDocumentMM(purl);
-  		if(requestedMM == null)
-  		{
-  			printWriter = response.getWriter();
-  			printWriter.append("No MM found for purl: " + purl);
-  			printWriter.close();
-  			return;
-  		}
-  		try
-			{
-  			//TranslationScope.setGraphSwitch(); 
+  }
 
-    		OutputStream writer = response.getOutputStream();
-      	System.out.println("Serializing MMD for purl: " + purl);
-      	requestedMM.serialize(System.out, FORMAT.JSON);
-      	requestedMM.serialize(writer, FORMAT.JSON);
+  private void sendMMDByName(HttpServletResponse response, String mmdNameParam)
+	{
+  	MetaMetadata mmByName = repo.getMMByName(mmdNameParam);
+  	
+		sendMM(response, mmByName);
+	}
+	
+  private void sendMMNameList(HttpServletResponse response)
+	{
+		ArrayList<String> mmdNameList = repo.getMMNameList();
+		if(mmdNameList != null && ! mmdNameList.isEmpty() )
+		{
+			
+
+			try
+			{
+				MetaMetadataNameListResponse mmdList = new MetaMetadataNameListResponse( mmdNameList);
+				OutputStream writer = response.getOutputStream();
+				mmdList.serialize(writer, FORMAT.JSON);
 			}
 			catch (SIMPLTranslationException e)
+			{
+				e.printStackTrace();
+			}
+			catch (IOException e)
 			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		}
+	}
+	private void sendMMDJsonForPurl(HttpServletResponse response, ParsedURL purl) throws IOException
+	{
+		MetaMetadata requestedMM = repo.getDocumentMM(purl);
+
+		sendMM(response, requestedMM);
+
+		return;
+	}
+	private void sendMM(HttpServletResponse response, MetaMetadata requestedMM)
+	{
+		PrintWriter printWriter;
+
+		try
+		{
+			
+			if(requestedMM == null)
+			{
+				printWriter = response.getWriter();
+				printWriter.append("No MM found");
+				printWriter.close();
+				return;
+			}
+		
+			OutputStream writer = response.getOutputStream();
+			System.out.println("Serializing MMD " + requestedMM);
+			//requestedMM.serialize(System.out, FORMAT.JSON);
+			requestedMM.serialize(writer, FORMAT.JSON);
+		}
+		catch (SIMPLTranslationException e)
+		{
+			e.printStackTrace();
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
   
-  }
 }
