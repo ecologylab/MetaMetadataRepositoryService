@@ -36,14 +36,18 @@ public class MMDJsonRepoServlet extends HttpServlet
 		repo = infoCollector.getMetaMetadataRepository();
 	}
 
+	/**
+	 * 
+	 */
 	public MMDJsonRepoServlet()
 	{
 
 	}
+	
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
   {
   		
-  		response.addHeader("Header set Access-Control-Allow-Origin", "*");
+  		response.addHeader("Access-Control-Allow-Origin", "*");
   		//As per gaurav, this header is required for the authoring tool.
   		
       response.setContentType("text/html");
@@ -57,12 +61,10 @@ public class MMDJsonRepoServlet extends HttpServlet
   		if(purl != null )
   		{
   			sendMMDJsonForPurl(response, purl);
-    		return;
   		}
   		else if(getMMDListParam != null)
   		{
     		sendMMNameList(response);
-				return;
   		}
   		else if(mmdNameParam != null && mmdNameParam.length() > 0 )
   		{
@@ -78,6 +80,11 @@ public class MMDJsonRepoServlet extends HttpServlet
   		
   }
 
+  /**
+   * 
+   * @param response
+   * @param mmdNameParam
+   */
   private void sendMMDByName(HttpServletResponse response, String mmdNameParam)
 	{
   	MetaMetadata mmByName = repo.getMMByName(mmdNameParam);
@@ -85,6 +92,10 @@ public class MMDJsonRepoServlet extends HttpServlet
 		sendMM(response, mmByName);
 	}
 	
+  /**
+   * 
+   * @param response
+   */
   private void sendMMNameList(HttpServletResponse response)
 	{
 		ArrayList<String> mmdNameList = repo.getMMNameList();
@@ -109,6 +120,13 @@ public class MMDJsonRepoServlet extends HttpServlet
 			}
 		}
 	}
+  
+  /**
+   * 
+   * @param response
+   * @param purl
+   * @throws IOException
+   */
 	private void sendMMDJsonForPurl(HttpServletResponse response, ParsedURL purl) throws IOException
 	{
 		MetaMetadata requestedMM = repo.getDocumentMM(purl);
@@ -117,6 +135,12 @@ public class MMDJsonRepoServlet extends HttpServlet
 
 		return;
 	}
+	
+	/**
+	 * 
+	 * @param response
+	 * @param requestedMM
+	 */
 	private void sendMM(HttpServletResponse response, MetaMetadata requestedMM)
 	{
 		PrintWriter printWriter;
