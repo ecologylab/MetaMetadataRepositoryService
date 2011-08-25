@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -34,6 +35,16 @@ public class MMDJsonRepoServlet extends HttpServlet
 		TranslationScope.setGraphSwitch(); 
 		SemanticsSessionScope infoCollector = new SemanticsSessionScope(RepositoryMetadataTranslationScope.get(), Tidy.class);
 		repo = infoCollector.getMetaMetadataRepository();
+		System.out.println("Performing restoration of children ");
+		for (MetaMetadata globalMmd : repo.values())
+			globalMmd.recursivelyRestoreChildComposite();
+		for (Map<String, MetaMetadata> packageMmdScope : repo.getPackageMmdScopes().values())
+		{
+			for (MetaMetadata packageMmd : packageMmdScope.values())
+				packageMmd.recursivelyRestoreChildComposite();
+		}
+		System.out.println("Done with restoration of children ");
+		
 	}
 
 	/**
