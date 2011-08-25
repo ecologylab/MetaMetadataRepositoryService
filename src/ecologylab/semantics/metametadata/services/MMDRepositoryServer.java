@@ -8,7 +8,7 @@ public class MMDRepositoryServer
 {
 	    public static void main(String[] args) throws Exception
 	    {
-	        Server server = new Server(80);
+	        Server server = new Server(8080);
 	        
 	        ServletContextHandler handler = new ServletContextHandler(ServletContextHandler.SESSIONS);
 	        handler.setContextPath("/");
