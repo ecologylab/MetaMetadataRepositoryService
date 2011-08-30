@@ -23,7 +23,11 @@ import ecologylab.serialization.ElementState.FORMAT;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.TranslationScope;
 
-
+/**
+ * Main servlet that has a single repo instance.
+ * @author damaraju
+ *
+ */
 @SuppressWarnings("serial")
 public class MMDJsonRepoServlet extends HttpServlet
 { 
