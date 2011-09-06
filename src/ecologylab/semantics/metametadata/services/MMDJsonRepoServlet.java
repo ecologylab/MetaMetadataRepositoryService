@@ -1,5 +1,6 @@
 package ecologylab.semantics.metametadata.services;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -15,9 +16,11 @@ import org.w3c.tidy.Tidy;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
+import ecologylab.semantics.cyberneko.CybernekoWrapper;
 import ecologylab.semantics.generated.library.RepositoryMetadataTranslationScope;
 import ecologylab.semantics.metametadata.MetaMetadata;
 import ecologylab.semantics.metametadata.MetaMetadataRepository;
+import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
 import ecologylab.semantics.metametadata.services.responses.MetaMetadataNameListResponse;
 import ecologylab.semantics.metametadata.services.responses.MetaMetadataPostResponse;
 import ecologylab.serialization.ElementState;
@@ -36,15 +39,18 @@ public class MMDJsonRepoServlet extends HttpServlet
 {
 
 	private static TranslationScope				mmdTScope;
-
+	private static String REPO_PATH_PREFIX = "../ecologylabSemantics/repository/powerUser/";
 	private static MetaMetadataRepository	repo;
 	static
 	{
-		TranslationScope.setGraphSwitch();
-		mmdTScope = RepositoryMetadataTranslationScope.get();
-		SemanticsSessionScope infoCollector = new SemanticsSessionScope(
-				mmdTScope, Tidy.class);
+		//TranslationScope.setGraphSwitch();
+		
+		SemanticsSessionScope infoCollector = new SemanticsSessionScope(RepositoryMetadataTranslationScope.get(), Tidy.class);
+		// new SemanticsSessionScope( RepositoryMetadataTranslationScope.get(), CybernekoWrapper.class);
 		repo = infoCollector.getMetaMetadataRepository();
+		
+		mmdTScope = MetaMetadataTranslationScope.get();
+		
 		System.out.println("Performing restoration of children ");
 		for (MetaMetadata globalMmd : repo.values())
 			globalMmd.recursivelyRestoreChildComposite();
@@ -80,12 +86,25 @@ public class MMDJsonRepoServlet extends HttpServlet
 			System.out.println("mmdStringContent: " + mmdStringContent);
 			try
 			{
-				ElementState incomingMMD = mmdTScope.deserializeCharSequence(mmdStringContent, FORMAT.JSON);
+				MetaMetadata incomingMMD = (MetaMetadata) mmdTScope.deserializeCharSequence(mmdStringContent, FORMAT.JSON);
+				incomingMMD.serialize(System.out);
+				System.out.println();
+				String fileName = incomingMMD.getName() + ".xml";
+				System.out.println("Successful deserialization, writing to file: " + REPO_PATH_PREFIX + fileName);
+				File outputFile = new File(REPO_PATH_PREFIX + fileName);
+				MetaMetadataRepository repoWrapper = new MetaMetadataRepository();
+				repoWrapper.addMetaMetadata(incomingMMD);
+				
+				repoWrapper.serialize(outputFile);
+				message = "Successfully added to the repository, please re-run the MMD Compiler to use this code.";
+				success = true;
 			}
 			catch (SIMPLTranslationException e)
 			{
-				System.out.println("Failed translation of mmd");
+				message = "Failed translation of MMD";
+				System.out.println(message);
 				e.printStackTrace();
+				
 			}
 		}
 		
@@ -93,7 +112,12 @@ public class MMDJsonRepoServlet extends HttpServlet
 		{
 			MetaMetadataPostResponse mmdResponse = new MetaMetadataPostResponse(success, message);
 			OutputStream writer = response.getOutputStream();
+			System.out.println("--Sending output: ");
+			mmdResponse.serialize(System.out, FORMAT.JSON);
+			System.err.println("--End of output\n");
+			
 			mmdResponse.serialize(writer, FORMAT.JSON);
+			writer.close();
 		}
 		catch (SIMPLTranslationException e){ e.printStackTrace(); }
 		catch (IOException e){ e.printStackTrace(); }
