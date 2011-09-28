@@ -1,13 +1,13 @@
 package ecologylab.semantics.metametadata.services.responses;
 
-import ecologylab.serialization.ElementState;
+import ecologylab.serialization.annotations.simpl_scalar;
 
 /**
  * Container for the response when the authoring tool submits an MMD via post.
  * @author damaraju
  *
  */
-public class MetaMetadataPostResponse extends ElementState
+public class MetaMetadataPostResponse
 {
 	
 	@simpl_scalar

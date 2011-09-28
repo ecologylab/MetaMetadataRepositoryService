@@ -20,5 +20,4 @@ public class MMDRepositoryServer
 	        server.start();
 	        server.join();
 	    }	
-
 }

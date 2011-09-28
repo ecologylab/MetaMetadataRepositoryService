@@ -2,9 +2,9 @@ package ecologylab.semantics.metametadata.services.responses;
 
 import java.util.ArrayList;
 
-import ecologylab.serialization.ElementState;
+import ecologylab.serialization.annotations.simpl_collection;
 
-public class MetaMetadataNameListResponse extends ElementState
+public class MetaMetadataNameListResponse
 {
 	
 	@simpl_collection("mmd_name_list")
@@ -19,4 +19,9 @@ public class MetaMetadataNameListResponse extends ElementState
 	{
 		this.mmdNameList = mmdNameList;
 	}
+
+	public ArrayList<String> getMmdNameList() {
+		return mmdNameList;
+	}
+
 }

@@ -27,6 +27,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/ecologylabFundamental"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ecologylabGeneratedSemantics"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ecologylabSemantics"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jtidy"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/cyberneko"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ecologylabSemanticsCyberneko"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

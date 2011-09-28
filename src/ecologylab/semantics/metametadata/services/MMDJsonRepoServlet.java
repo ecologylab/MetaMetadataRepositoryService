@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.w3c.tidy.Tidy;
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
@@ -23,9 +22,10 @@ import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
 import ecologylab.semantics.metametadata.services.responses.MetaMetadataNameListResponse;
 import ecologylab.semantics.metametadata.services.responses.MetaMetadataPostResponse;
-import ecologylab.serialization.ElementState;
-import ecologylab.serialization.ElementState.FORMAT;
+import ecologylab.serialization.ClassDescriptor;
+import ecologylab.serialization.Format;
 import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.StringFormat;
 import ecologylab.serialization.TranslationScope;
 
 /**
@@ -45,7 +45,7 @@ public class MMDJsonRepoServlet extends HttpServlet
 	{
 		//TranslationScope.setGraphSwitch();
 		
-		SemanticsSessionScope infoCollector = new SemanticsSessionScope(RepositoryMetadataTranslationScope.get(), Tidy.class);
+		SemanticsSessionScope infoCollector = new SemanticsSessionScope(RepositoryMetadataTranslationScope.get(), CybernekoWrapper.class);
 		// new SemanticsSessionScope( RepositoryMetadataTranslationScope.get(), CybernekoWrapper.class);
 		repo = infoCollector.getMetaMetadataRepository();
 		
@@ -86,8 +86,10 @@ public class MMDJsonRepoServlet extends HttpServlet
 			System.out.println("mmdStringContent: " + mmdStringContent);
 			try
 			{
-				MetaMetadata incomingMMD = (MetaMetadata) mmdTScope.deserializeCharSequence(mmdStringContent, FORMAT.JSON);
-				incomingMMD.serialize(System.out);
+				MetaMetadata incomingMMD = (MetaMetadata) mmdTScope.deserialize(mmdStringContent, StringFormat.JSON);
+				
+				ClassDescriptor.serialize(incomingMMD, System.out, StringFormat.XML);
+				
 				System.out.println();
 				String fileName = incomingMMD.getName() + ".xml";
 				System.out.println("Successful deserialization, writing to file: " + REPO_PATH_PREFIX + fileName);
@@ -95,7 +97,8 @@ public class MMDJsonRepoServlet extends HttpServlet
 				MetaMetadataRepository repoWrapper = new MetaMetadataRepository();
 				repoWrapper.addMetaMetadata(incomingMMD);
 				
-				repoWrapper.serialize(outputFile);
+				ClassDescriptor.serialize(repoWrapper, outputFile, Format.XML);
+				
 				message = "Successfully added to the repository, please re-run the MMD Compiler to use this code.";
 				success = true;
 			}
@@ -111,16 +114,19 @@ public class MMDJsonRepoServlet extends HttpServlet
 		try
 		{
 			MetaMetadataPostResponse mmdResponse = new MetaMetadataPostResponse(success, message);
-			OutputStream writer = response.getOutputStream();
+			PrintWriter writer = response.getWriter();
 			System.out.println("--Sending output: ");
-			mmdResponse.serialize(System.out, FORMAT.JSON);
-			System.err.println("--End of output\n");
 			
-			mmdResponse.serialize(writer, FORMAT.JSON);
+			ClassDescriptor.serialize(mmdResponse, System.out, StringFormat.JSON);
+			ClassDescriptor.serialize(mmdResponse, writer, StringFormat.JSON);
 			writer.close();
+			
+			System.err.println("--End of output\n");
 		}
-		catch (SIMPLTranslationException e){ e.printStackTrace(); }
-		catch (IOException e){ e.printStackTrace(); }
+		catch (IOException e){ e.printStackTrace(); } catch (SIMPLTranslationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 	
@@ -188,8 +194,8 @@ public class MMDJsonRepoServlet extends HttpServlet
 			try
 			{
 				MetaMetadataNameListResponse mmdList = new MetaMetadataNameListResponse(mmdNameList);
-				OutputStream writer = response.getOutputStream();
-				mmdList.serialize(writer, FORMAT.JSON);
+				PrintWriter writer = response.getWriter();
+				ClassDescriptor.serialize(mmdList, writer, StringFormat.JSON);
 			}
 			catch (SIMPLTranslationException e)
 			{
@@ -197,7 +203,6 @@ public class MMDJsonRepoServlet extends HttpServlet
 			}
 			catch (IOException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -238,10 +243,10 @@ public class MMDJsonRepoServlet extends HttpServlet
 				return;
 			}
 
-			OutputStream writer = response.getOutputStream();
+			PrintWriter writer = response.getWriter();
 			System.out.println("Serializing MMD " + requestedMM);
 			// requestedMM.serialize(System.out, FORMAT.JSON);
-			requestedMM.serialize(writer, FORMAT.JSON);
+			ClassDescriptor.serialize(requestedMM, writer, StringFormat.JSON);
 		}
 		catch (SIMPLTranslationException e)
 		{
