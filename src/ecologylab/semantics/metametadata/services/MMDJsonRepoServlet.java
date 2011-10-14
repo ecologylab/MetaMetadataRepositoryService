@@ -2,7 +2,6 @@ package ecologylab.semantics.metametadata.services;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Map;
@@ -11,7 +10,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 
 import ecologylab.net.ParsedURL;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
@@ -22,11 +20,10 @@ import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
 import ecologylab.semantics.metametadata.services.responses.MetaMetadataNameListResponse;
 import ecologylab.semantics.metametadata.services.responses.MetaMetadataPostResponse;
-import ecologylab.serialization.ClassDescriptor;
 import ecologylab.serialization.Format;
 import ecologylab.serialization.SIMPLTranslationException;
+import ecologylab.serialization.SimplTypesScope;
 import ecologylab.serialization.StringFormat;
-import ecologylab.serialization.TranslationScope;
 
 /**
  * Main servlet that has a single repo instance.
@@ -38,12 +35,12 @@ import ecologylab.serialization.TranslationScope;
 public class MMDJsonRepoServlet extends HttpServlet
 {
 
-	private static TranslationScope				mmdTScope;
+	private static SimplTypesScope mmdTScope;
 	private static String REPO_PATH_PREFIX = "../ecologylabSemantics/repository/powerUser/";
 	private static MetaMetadataRepository	repo;
 	static
 	{
-		//TranslationScope.setGraphSwitch();
+		//SimpleTypeScope.setGraphSwitch();
 		
 		SemanticsSessionScope infoCollector = new SemanticsSessionScope(RepositoryMetadataTranslationScope.get(), CybernekoWrapper.class);
 		// new SemanticsSessionScope( RepositoryMetadataTranslationScope.get(), CybernekoWrapper.class);
@@ -88,7 +85,7 @@ public class MMDJsonRepoServlet extends HttpServlet
 			{
 				MetaMetadata incomingMMD = (MetaMetadata) mmdTScope.deserialize(mmdStringContent, StringFormat.JSON);
 				
-				ClassDescriptor.serialize(incomingMMD, System.out, StringFormat.XML);
+				SimplTypesScope.serialize(incomingMMD, System.out, StringFormat.XML);
 				
 				System.out.println();
 				String fileName = incomingMMD.getName() + ".xml";
@@ -97,7 +94,7 @@ public class MMDJsonRepoServlet extends HttpServlet
 				MetaMetadataRepository repoWrapper = new MetaMetadataRepository();
 				repoWrapper.addMetaMetadata(incomingMMD);
 				
-				ClassDescriptor.serialize(repoWrapper, outputFile, Format.XML);
+				SimplTypesScope.serialize(repoWrapper, outputFile, Format.XML);
 				
 				message = "Successfully added to the repository, please re-run the MMD Compiler to use this code.";
 				success = true;
@@ -117,14 +114,13 @@ public class MMDJsonRepoServlet extends HttpServlet
 			PrintWriter writer = response.getWriter();
 			System.out.println("--Sending output: ");
 			
-			ClassDescriptor.serialize(mmdResponse, System.out, StringFormat.JSON);
-			ClassDescriptor.serialize(mmdResponse, writer, StringFormat.JSON);
+			SimplTypesScope.serialize(mmdResponse, System.out, StringFormat.JSON);
+			SimplTypesScope.serialize(mmdResponse, writer, StringFormat.JSON);
 			writer.close();
 			
 			System.err.println("--End of output\n");
 		}
 		catch (IOException e){ e.printStackTrace(); } catch (SIMPLTranslationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -195,7 +191,7 @@ public class MMDJsonRepoServlet extends HttpServlet
 			{
 				MetaMetadataNameListResponse mmdList = new MetaMetadataNameListResponse(mmdNameList);
 				PrintWriter writer = response.getWriter();
-				ClassDescriptor.serialize(mmdList, writer, StringFormat.JSON);
+				SimplTypesScope.serialize(mmdList, writer, StringFormat.JSON);
 			}
 			catch (SIMPLTranslationException e)
 			{
@@ -245,8 +241,8 @@ public class MMDJsonRepoServlet extends HttpServlet
 
 			PrintWriter writer = response.getWriter();
 			System.out.println("Serializing MMD " + requestedMM);
-			// requestedMM.serialize(System.out, FORMAT.JSON);
-			ClassDescriptor.serialize(requestedMM, writer, StringFormat.JSON);
+			//requestedMM.serialize(System.out, FORMAT.JSON);
+			SimplTypesScope.serialize(requestedMM, writer, StringFormat.JSON);
 		}
 		catch (SIMPLTranslationException e)
 		{
@@ -254,7 +250,6 @@ public class MMDJsonRepoServlet extends HttpServlet
 		}
 		catch (IOException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
