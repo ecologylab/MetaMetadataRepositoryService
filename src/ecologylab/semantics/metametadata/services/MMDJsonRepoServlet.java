@@ -20,10 +20,10 @@ import ecologylab.semantics.metametadata.MetaMetadataRepository;
 import ecologylab.semantics.metametadata.MetaMetadataTranslationScope;
 import ecologylab.semantics.metametadata.services.responses.MetaMetadataNameListResponse;
 import ecologylab.semantics.metametadata.services.responses.MetaMetadataPostResponse;
-import ecologylab.serialization.Format;
+import ecologylab.serialization.formatenums.*;
 import ecologylab.serialization.SIMPLTranslationException;
 import ecologylab.serialization.SimplTypesScope;
-import ecologylab.serialization.StringFormat;
+
 
 /**
  * Main servlet that has a single repo instance.
