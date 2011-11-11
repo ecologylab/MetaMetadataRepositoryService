@@ -36,7 +36,7 @@ public class MMDJsonRepoServlet extends HttpServlet
 {
 
 	private static SimplTypesScope mmdTScope;
-	private static String REPO_PATH_PREFIX = "../ecologylabSemantics/repository/powerUser/";
+	private static String REPO_PATH_PREFIX = "../../MetaMetadataRepository/MmdRepository/mmdrepository";
 	private static MetaMetadataRepository	repo;
 	static
 	{
@@ -47,16 +47,6 @@ public class MMDJsonRepoServlet extends HttpServlet
 		repo = infoCollector.getMetaMetadataRepository();
 		
 		mmdTScope = MetaMetadataTranslationScope.get();
-		
-		System.out.println("Performing restoration of children ");
-		for (MetaMetadata globalMmd : repo.values())
-			globalMmd.recursivelyRestoreChildComposite();
-		for (Map<String, MetaMetadata> packageMmdScope : repo.getPackageMmdScopes().values())
-		{
-			for (MetaMetadata packageMmd : packageMmdScope.values())
-				packageMmd.recursivelyRestoreChildComposite();
-		}
-		System.out.println("Done with restoration of children ");
 
 	}
 
