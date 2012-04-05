@@ -30,5 +30,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/cyberneko"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ecologylabSemanticsCyberneko"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/MetaMetadataRepository"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ecologylabFundamentalSun"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ecologylabSemanticsSun"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
