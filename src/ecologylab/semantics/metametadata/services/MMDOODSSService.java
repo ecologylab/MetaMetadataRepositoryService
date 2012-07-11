@@ -9,9 +9,9 @@ import ecologylab.oodss.distributed.server.varieties.HttpPostServer;
 import ecologylab.oodss.messages.DefaultServicesTranslations;
 import ecologylab.semantics.collecting.SemanticsSessionScope;
 import ecologylab.semantics.cyberneko.CybernekoWrapper;
+import ecologylab.semantics.downloaders.oodss.LookupMmdRequest;
+import ecologylab.semantics.downloaders.oodss.LookupMmdResponse;
 import ecologylab.semantics.generated.library.RepositoryMetadataTranslationScope;
-import ecologylab.semantics.metametadata.services.requests.LookupMmdRequest;
-import ecologylab.semantics.metametadata.services.responses.LookupMmdResponse;
 import ecologylab.serialization.SimplTypesScope;
 
 public class MMDOODSSService {
